@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Software Engineer · QA Automation Engineer · DevOps Enthusiast</strong><br/>
-  Fort Wayne, IN &nbsp;|&nbsp; <a href="mailto:namitg97@gmail.com">namitg97@gmail.com</a> &nbsp;|&nbsp; <a href="https://www.linkedin.com/in/namit-gupta">LinkedIn</a>
+  Fort Wayne, IN &nbsp;|&nbsp; <a href="mailto:namitg97@gmail.com">namitg97@gmail.com</a> &nbsp;|&nbsp; <a href="https://www.linkedin.com/in/namit-gupta">LinkedIn</a> &nbsp;|&nbsp; <a href="https://namitg97-cell.github.io/namitg97-cell/">Portfolio</a>
 </p>
 
 ---
@@ -102,6 +102,7 @@ Built a real-time security monitoring platform with log ingestion, dashboards, a
 
 - 📧 [namitg97@gmail.com](mailto:namitg97@gmail.com)
 - 💼 [LinkedIn](https://www.linkedin.com/in/namit-gupta)
+- 🌐 [Portfolio](https://namitg97-cell.github.io/namitg97-cell/)
 - 📍 Fort Wayne, IN — Open to relocation
 
 ---
