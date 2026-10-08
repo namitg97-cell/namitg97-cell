@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Namit Gupta — SWE & QA Automation Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;500;600;700;800&family=Nunito+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#080C10;--bg2:#0D1219;--bg3:#121921;
+  --green:#00F5D4;--green-dim:rgba(0,245,212,.10);--green-glow:rgba(0,245,212,.30);
+  --indigo:#FF2D78;--indigo-dim:rgba(255,45,120,.10);--indigo-glow:rgba(255,45,120,.28);
+  --white:#E8F0F5;--white2:#7A90A0;--muted:#3A4A56;
+  --border:rgba(0,245,212,.16);--border2:rgba(255,255,255,.05);
+  --pass:#00F5D4;--fail:#FF2D78;--skip:#FFD700;
+  --ox:'Oxanium',sans-serif;
+  --nu:'Nunito Sans',sans-serif;
+  --mo:'Roboto Mono',monospace;
+  --r:8px;--rl:14px;--tr:.2s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:var(--nu);font-size:16px;line-height:1.65;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}
+strong{color:var(--white);font-weight:600;}
+::selection{background:var(--indigo);color:#fff;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--indigo);border-radius:2px;}
+
+/* ── STATUS TICKER ── */
+.ticker{position:fixed;top:0;left:0;right:0;z-index:200;height:28px;background:#050810;border-bottom:1px solid rgba(0,245,212,.18);display:flex;align-items:center;overflow:hidden;}
+.ticker-track{display:flex;gap:3rem;white-space:nowrap;animation:ticker-scroll 30s linear infinite;}
+.ticker-item{font-family:var(--mo);font-size:.65rem;color:var(--muted);display:flex;align-items:center;gap:.4rem;}
+.ticker-item .dot{width:6px;height:6px;border-radius:50%;}
+.dot-pass{background:var(--pass);}
+.dot-fail{background:var(--fail);}
+.dot-skip{background:var(--skip);}
+@keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ── NAV ── */
+.nav{position:fixed;top:28px;left:0;right:0;z-index:100;background:rgba(8,12,16,.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);transition:border-color var(--tr);}
+.nav.scrolled{border-bottom-color:var(--border);}
+.nav-inner{max-width:1120px;margin:0 auto;padding:.8rem 5%;display:flex;align-items:center;gap:1.5rem;}
+.nav-logo{display:flex;align-items:center;gap:.65rem;flex-shrink:0;}
+.nav-badge{font-family:var(--mo);font-size:.65rem;padding:.2rem .6rem;border-radius:4px;background:var(--green-dim);border:1px solid rgba(0,245,212,.30);color:var(--green);display:flex;align-items:center;gap:.4rem;}
+.nav-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse-dot 2s ease-in-out infinite;}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.85)}}
+.nav-name{font-family:var(--ox);font-size:.9rem;font-weight:600;letter-spacing:.04em;color:var(--white);}
+.nav-links{display:flex;gap:1.6rem;margin-left:auto;}
+.nav-links a{font-family:var(--mo);font-size:.68rem;color:var(--muted);letter-spacing:.05em;transition:color var(--tr);}
+.nav-links a:hover{color:var(--green);}
+.nav-actions{display:flex;gap:.65rem;}
+.btn-dl{display:flex;align-items:center;gap:.4rem;font-family:var(--mo);font-size:.68rem;padding:.38rem .9rem;border:1px solid var(--border);color:var(--indigo);border-radius:var(--r);background:var(--indigo-dim);cursor:pointer;transition:background var(--tr),border-color var(--tr);}
+.btn-dl:hover{background:var(--indigo-glow);border-color:var(--indigo);}
+.btn-hire{font-family:var(--ox);font-size:.82rem;font-weight:600;letter-spacing:.04em;padding:.38rem 1rem;background:var(--green);color:#fff;border-radius:var(--r);border:none;cursor:pointer;transition:box-shadow var(--tr),transform var(--tr);}
+.btn-hire:hover{box-shadow:0 0 20px var(--green-glow);transform:translateY(-1px);}
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;margin-left:auto;}
+.hamburger span{display:block;width:20px;height:1.5px;background:var(--white);border-radius:2px;transition:transform var(--tr),opacity var(--tr);}
+.hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+.mob-nav{position:fixed;top:calc(28px + 52px);left:0;right:0;z-index:99;background:var(--bg2);border-bottom:1px solid var(--border2);padding:1rem 5%;display:none;flex-direction:column;}
+.mob-nav.open{display:flex;}
+.mob-nav a,.mob-nav button{font-family:var(--mo);font-size:.85rem;padding:.7rem 0;border-bottom:1px solid var(--border2);color:var(--muted);text-align:left;background:none;border-left:none;border-right:none;border-top:none;cursor:pointer;transition:color var(--tr);}
+.mob-nav a:last-child,.mob-nav button:last-child{border-bottom:none;}
+.mob-nav a:hover,.mob-nav button:hover{color:var(--green);}
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;align-items:center;padding:8rem 5% 5rem;position:relative;overflow:hidden;}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,245,212,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,212,.05) 1px,transparent 1px);background-size:48px 48px;}
+.hero-inner{position:relative;z-index:2;max-width:1120px;margin:0 auto;width:100%;display:grid;grid-template-columns:auto 1fr;gap:3.5rem;align-items:center;}
+
+/* monogram */
+.hero-mono-wrap{display:flex;flex-direction:column;align-items:center;gap:1.2rem;}
+.monogram{width:108px;height:108px;border-radius:12px;background:linear-gradient(135deg,var(--bg3),var(--bg2));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--ox);font-size:2.2rem;font-weight:700;color:var(--green);letter-spacing:.04em;flex-shrink:0;position:relative;}
+.monogram::after{content:'';position:absolute;inset:-1px;border-radius:13px;background:linear-gradient(135deg,var(--green),var(--indigo));z-index:-1;opacity:.4;}
+.hero-socials{display:flex;flex-direction:column;gap:.5rem;align-items:center;}
+.hsoc{display:flex;align-items:center;gap:.45rem;font-family:var(--mo);font-size:.62rem;color:var(--muted);transition:color var(--tr);white-space:nowrap;}
+.hsoc:hover{color:var(--green);}
+
+/* suite card */
+.suite-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--rl);overflow:hidden;margin-bottom:1.8rem;}
+.suite-header{display:flex;align-items:center;justify-content:space-between;padding:.7rem 1.2rem;background:var(--bg3);border-bottom:1px solid var(--border2);}
+.suite-title{font-family:var(--mo);font-size:.65rem;color:var(--muted);}
+.suite-status{font-family:var(--mo);font-size:.65rem;color:var(--green);display:flex;align-items:center;gap:.35rem;}
+.suite-rows{padding:.5rem 0;}
+.suite-row{display:flex;align-items:center;gap:.75rem;padding:.4rem 1.2rem;}
+.sr-label{font-family:var(--mo);font-size:.68rem;color:var(--white2);flex:1;}
+.sr-bar{width:90px;height:6px;border-radius:3px;background:rgba(255,255,255,.05);overflow:hidden;}
+.sr-fill{height:100%;border-radius:3px;}
+.fill-pass{background:var(--pass);}
+.fill-ind{background:var(--indigo);}
+.fill-skip{background:var(--skip);}
+.sr-pct{font-family:var(--mo);font-size:.6rem;color:var(--muted);width:28px;text-align:right;}
+
+.hero-eyebrow{font-family:var(--mo);font-size:.65rem;color:var(--green);letter-spacing:.14em;margin-bottom:.5rem;}
+.hero-name{font-family:var(--ox);font-size:clamp(2.6rem,5vw,4rem);font-weight:800;letter-spacing:.02em;line-height:1.05;margin-bottom:.4rem;}
+.hero-role{font-family:var(--ox);font-size:1rem;font-weight:500;color:var(--indigo);letter-spacing:.05em;margin-bottom:1rem;}
+.hero-summary{font-size:.93rem;color:var(--white2);line-height:1.8;max-width:520px;margin-bottom:1.8rem;}
+.hero-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-bottom:2rem;}
+.hmet{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:.9rem;text-align:center;transition:border-color var(--tr);}
+.hmet:hover{border-color:var(--border);}
+.hmet-val{font-family:var(--ox);font-size:1.5rem;font-weight:700;color:var(--green);line-height:1;margin-bottom:.2rem;}
+.hmet-lbl{font-family:var(--mo);font-size:.58rem;color:var(--muted);line-height:1.3;}
+.hero-ctas{display:flex;gap:.75rem;flex-wrap:wrap;}
+.btn-primary{font-family:var(--ox);font-size:.88rem;font-weight:600;letter-spacing:.04em;padding:.8rem 1.8rem;background:var(--green);color:#fff;border-radius:var(--r);border:none;cursor:pointer;transition:box-shadow var(--tr),transform var(--tr);}
+.btn-primary:hover{box-shadow:0 0 26px var(--green-glow);transform:translateY(-2px);}
+.btn-secondary{font-size:.88rem;font-weight:500;padding:.8rem 1.8rem;border:1px solid var(--border);color:var(--white);border-radius:var(--r);cursor:pointer;background:none;transition:border-color var(--tr),color var(--tr);}
+.btn-secondary:hover{border-color:var(--indigo);color:var(--indigo);}
+
+/* ── CI PIPELINE ── */
+.section{padding:5.5rem 5%;}
+.section-alt{background:var(--bg2);}
+.container{max-width:1120px;margin:0 auto;}
+.sec-label{font-family:var(--mo);font-size:.65rem;color:var(--indigo);letter-spacing:.14em;margin-bottom:.4rem;}
+.sec-heading{font-family:var(--ox);font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700;letter-spacing:.02em;color:var(--white);margin-bottom:.4rem;line-height:1.15;}
+.sec-desc{font-size:.9rem;color:var(--muted);margin-bottom:2.8rem;max-width:500px;}
+
+.pipeline-wrap{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rl);padding:1.6rem;margin-bottom:3rem;}
+.pipeline-label{font-family:var(--mo);font-size:.63rem;color:var(--muted);letter-spacing:.1em;margin-bottom:1.2rem;}
+.pipeline-stages{display:flex;align-items:center;gap:0;}
+.ps{display:flex;flex-direction:column;align-items:center;gap:.5rem;flex:1;}
+.ps-dot{width:36px;height:36px;border-radius:50%;border:2px solid var(--muted);display:flex;align-items:center;justify-content:center;font-size:1rem;background:var(--bg2);transition:border-color .4s ease,background .4s ease;}
+.ps-dot.active{border-color:var(--green);background:var(--green-dim);box-shadow:0 0 12px var(--green-glow);}
+.ps-dot.done{border-color:var(--green);background:var(--green);}
+.ps-dot.done span{display:none;}
+.ps-dot.done::after{content:'✓';color:#000;font-size:.9rem;font-weight:700;}
+.ps-lbl{font-family:var(--mo);font-size:.6rem;color:var(--muted);text-align:center;transition:color .4s ease;}
+.ps-lbl.active,.ps-lbl.done{color:var(--green);}
+.ps-connector{flex:1;height:2px;background:var(--border2);margin-bottom:1.5rem;position:relative;overflow:hidden;}
+.ps-connector-fill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--green);transition:width .6s ease;}
+
+/* ── SKILLS ── */
+.coverage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.1rem;}
+.cov-card{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rl);padding:1.3rem;transition:border-color var(--tr),transform var(--tr);}
+.cov-card:hover{border-color:var(--border);transform:translateY(-2px);}
+.cov-card.featured{border-color:rgba(34,197,94,.25);}
+.cov-head{display:flex;align-items:center;gap:.6rem;margin-bottom:.9rem;padding-bottom:.7rem;border-bottom:1px solid var(--border2);}
+.cov-icon{font-size:1rem;}
+.cov-title{font-family:var(--ox);font-size:.85rem;font-weight:600;letter-spacing:.03em;color:var(--white);flex:1;}
+.cov-badge{font-family:var(--mo);font-size:.56rem;padding:.12rem .45rem;border-radius:4px;}
+.cb-pass{background:var(--green-dim);border:1px solid rgba(0,245,212,.22);color:var(--green);}
+.cb-ind{background:var(--indigo-dim);border:1px solid rgba(255,45,120,.22);color:var(--indigo);}
+.tags{display:flex;flex-wrap:wrap;gap:.35rem;}
+.tag{font-family:var(--mo);font-size:.61rem;padding:.16rem .48rem;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--muted);transition:border-color var(--tr),color var(--tr);}
+.tag:hover{border-color:var(--border);color:var(--white);}
+.tag-g{background:var(--green-dim);border-color:rgba(0,245,212,.18);color:var(--green);}
+.tag-i{background:var(--indigo-dim);border-color:rgba(255,45,120,.18);color:var(--indigo);}
+
+/* ── EXPERIENCE — execution log ── */
+.exec-log{display:flex;flex-direction:column;gap:1.5rem;}
+.log-entry{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rl);overflow:hidden;transition:border-color var(--tr);}
+.log-entry:hover{border-color:var(--border);}
+.log-header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.7rem;padding:1.4rem 1.6rem 1rem;background:var(--bg2);border-bottom:1px solid var(--border2);}
+.log-org{font-family:var(--ox);font-size:1.1rem;font-weight:700;letter-spacing:.02em;color:var(--white);margin-bottom:.2rem;}
+.log-role{font-family:var(--mo);font-size:.7rem;color:var(--green);}
+.log-meta{display:flex;flex-direction:column;align-items:flex-end;gap:.25rem;}
+.log-period{font-family:var(--mo);font-size:.65rem;color:var(--muted);}
+.log-status{font-family:var(--mo);font-size:.6rem;padding:.14rem .5rem;border-radius:4px;}
+.ls-pass{background:var(--green-dim);border:1px solid rgba(0,245,212,.22);color:var(--green);}
+.ls-done{background:var(--indigo-dim);border:1px solid rgba(255,45,120,.22);color:var(--indigo);}
+.log-stack{display:flex;flex-wrap:wrap;gap:.3rem;padding:.75rem 1.6rem;border-bottom:1px solid var(--border2);}
+.log-body{padding:1.2rem 1.6rem;}
+.log-bullets{list-style:none;display:flex;flex-direction:column;gap:.65rem;}
+.log-bullets li{font-size:.9rem;color:var(--white2);line-height:1.7;padding-left:1.2rem;position:relative;}
+.log-bullets li::before{content:'›';position:absolute;left:0;color:var(--green);font-size:1rem;top:-.05rem;}
+
+/* ── PROJECTS ── */
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:1.3rem;}
+.proj-card{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rl);padding:1.7rem;display:flex;flex-direction:column;transition:border-color var(--tr),transform var(--tr);}
+.proj-card:hover{border-color:var(--border);transform:translateY(-3px);}
+.proj-card.featured{border-color:rgba(34,197,94,.25);}
+.proj-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem;}
+.proj-domain{font-family:var(--mo);font-size:.6rem;color:var(--indigo);letter-spacing:.08em;text-transform:uppercase;}
+.proj-gh{display:flex;align-items:center;gap:.3rem;font-family:var(--mo);font-size:.62rem;color:var(--muted);border:1px solid var(--border2);padding:.16rem .5rem;border-radius:4px;transition:border-color var(--tr),color var(--tr);}
+.proj-gh:hover{border-color:var(--green);color:var(--green);}
+.proj-title{font-family:var(--ox);font-size:1.05rem;font-weight:700;letter-spacing:.02em;color:var(--white);margin-bottom:.55rem;line-height:1.25;}
+.proj-desc{font-size:.875rem;color:var(--white2);line-height:1.75;flex:1;margin-bottom:1.1rem;}
+.proj-tags{display:flex;flex-wrap:wrap;gap:.3rem;padding-top:.85rem;border-top:1px solid var(--border2);}
+
+/* ── EDUCATION ── */
+.edu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.3rem;}
+.edu-card{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rl);padding:1.8rem;transition:border-color var(--tr);}
+.edu-card:hover{border-color:var(--border);}
+.edu-card.featured{border-left:3px solid var(--green);}
+.edu-deg{font-family:var(--ox);font-size:1rem;font-weight:700;letter-spacing:.02em;color:var(--white);margin-bottom:.3rem;}
+.edu-school{font-size:.9rem;font-weight:500;color:var(--indigo);margin-bottom:.2rem;}
+.edu-loc{font-family:var(--mo);font-size:.67rem;color:var(--muted);margin-bottom:.5rem;}
+.edu-gpa{font-family:var(--mo);font-size:.65rem;color:var(--green);background:var(--green-dim);border:1px solid rgba(0,245,212,.18);padding:.15rem .55rem;border-radius:4px;display:inline-block;margin-bottom:.6rem;}
+.edu-courses{display:flex;flex-wrap:wrap;gap:.35rem;}
+.ecourse{font-family:var(--mo);font-size:.6rem;padding:.14rem .48rem;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--muted);}
+
+/* ── ACHIEVEMENTS ── */
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.1rem;}
+.ach-card{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rl);padding:1.5rem;display:flex;gap:.9rem;align-items:flex-start;transition:border-color var(--tr);}
+.ach-card:hover{border-color:var(--border);}
+.ach-card.featured{border-left:3px solid var(--indigo);}
+.ach-icon{font-size:1.4rem;flex-shrink:0;}
+.ach-title{font-family:var(--ox);font-size:.9rem;font-weight:600;letter-spacing:.02em;color:var(--white);margin-bottom:.25rem;}
+.ach-body{font-size:.84rem;color:var(--white2);line-height:1.65;}
+
+/* ── CONTACT ── */
+.contact-wrap{max-width:620px;margin:0 auto;text-align:center;}
+.contact-heading{font-family:var(--ox);font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;letter-spacing:.02em;color:var(--white);margin-bottom:.8rem;}
+.contact-sub{font-size:.92rem;color:var(--muted);line-height:1.7;margin-bottom:2rem;}
+.contact-actions{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+.btn-cta{display:flex;align-items:center;gap:.5rem;font-family:var(--ox);font-size:.88rem;font-weight:600;letter-spacing:.03em;padding:.85rem 1.9rem;background:var(--green);color:#fff;border-radius:var(--r);border:none;cursor:pointer;transition:box-shadow var(--tr),transform var(--tr);}
+.btn-cta:hover{box-shadow:0 0 26px var(--green-glow);transform:translateY(-2px);}
+.btn-outline-lg{display:flex;align-items:center;gap:.5rem;font-size:.88rem;font-weight:500;padding:.85rem 1.9rem;border:1px solid var(--border);color:var(--white);border-radius:var(--r);cursor:pointer;background:none;transition:border-color var(--tr),background var(--tr);}
+.btn-outline-lg:hover{border-color:var(--indigo);background:var(--indigo-dim);}
+.contact-row{display:flex;justify-content:center;flex-wrap:wrap;align-items:center;gap:.7rem;font-family:var(--mo);font-size:.7rem;color:var(--muted);}
+.contact-row a{transition:color var(--tr);}
+.contact-row a:hover{color:var(--white);}
+.csep{opacity:.3;}
+
+/* ── FOOTER ── */
+footer{background:#030608;padding:1.5rem 5%;border-top:1px solid var(--border2);}
+.footer-inner{max-width:1120px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.7rem;}
+.footer-name{font-family:var(--ox);font-size:.9rem;font-weight:700;letter-spacing:.04em;color:var(--white);}
+.footer-copy{font-family:var(--mo);font-size:.62rem;color:var(--muted);}
+.footer-tag{font-family:var(--mo);font-size:.62rem;color:var(--green);}
+
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .55s ease,transform .55s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:860px){
+  .hero-inner{grid-template-columns:1fr;}
+  .hero-mono-wrap{flex-direction:row;justify-content:flex-start;}
+  .hero-socials{flex-direction:row;flex-wrap:wrap;}
+  .nav-links,.nav-actions{display:none;}
+  .hamburger{display:flex;}
+}
+@media(max-width:600px){
+  .hero-metrics{grid-template-columns:1fr 1fr;}
+  .hero-ctas{flex-direction:column;}
+  .contact-actions{flex-direction:column;align-items:center;}
+  .footer-inner{flex-direction:column;text-align:center;}
+  .pipeline-stages{flex-wrap:wrap;gap:.5rem;}
+  .ps-connector{display:none;}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+
+<!-- STATUS TICKER -->
+<div class="ticker">
+  <div class="ticker-track" id="ticker-track"></div>
+</div>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <div class="nav-badge"><span class="nav-badge-dot"></span>OPEN TO WORK</div>
+      <span class="nav-name">Namit Gupta</span>
+    </div>
+    <nav class="nav-links">
+      <a href="#skills">Skills</a>
+      <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
+      <a href="#achievements">Achievements</a>
+      <a href="#education">Education</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="btn-dl" id="dl-nav">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Resume
+      </button>
+      <a href="#contact"><button class="btn-hire">Hire Me</button></a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- MOBILE NAV -->
+<div class="mob-nav" id="mob-nav">
+  <a href="#skills">Skills</a>
+  <a href="#experience">Experience</a>
+  <a href="#projects">Projects</a>
+  <a href="#achievements">Achievements</a>
+  <a href="#education">Education</a>
+  <a href="#contact">Contact</a>
+  <button id="dl-mob">⬇ Download Resume</button>
+</div>
+
+<main>
+
+<!-- HERO -->
+<section id="hero" class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-mono-wrap">
+      <img src="https://avatars.githubusercontent.com/u/272339747?v=4" alt="Namit Gupta" style="width:108px;height:108px;border-radius:12px;object-fit:cover;border:2px solid var(--green);box-shadow:0 0 18px rgba(0,245,212,.35);flex-shrink:0;display:block;"/>
+      <div class="hero-socials">
+        <a href="https://linkedin.com/in/namit-gupta" target="_blank" rel="noopener" class="hsoc">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          LinkedIn
+        </a>
+        <a href="https://github.com/namitg97-cell" target="_blank" rel="noopener" class="hsoc">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+          GitHub
+        </a>
+        <a href="mailto:namitg97@gmail.com" class="hsoc">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Email
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <p class="hero-eyebrow">// TARGETING: JIRA ADMIN · JIRA DEVELOPER · SDET · SWE</p>
+      <h1 class="hero-name">Namit<br/>Gupta</h1>
+      <p class="hero-role">Jira Administrator · QA Automation · Software Engineer</p>
+      <p class="hero-summary">4+ years at <strong>Tata Consultancy Services</strong> building Selenium and Playwright test automation frameworks, CI/CD pipelines, and Jira workflow tooling. Expert in <strong>Jira Administration and Jira Development</strong> — permissions, schemes, ScriptRunner, and Groovy scripting. Experienced in Java, Python, REST APIs, Azure DevOps, and Atlassian ecosystems. Currently completing an <strong>M.S. in Information Systems (GPA 3.96)</strong> at Indiana Tech.</p>
+
+      <!-- Test Suite Summary Card -->
+      <div class="suite-card">
+        <div class="suite-header">
+          <span class="suite-title">// CAREER TEST SUITE — namit.gupta@tcs</span>
+          <span class="suite-status"><span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;"></span> ALL PASS</span>
+        </div>
+        <div class="suite-rows">
+          <div class="suite-row">
+            <span class="sr-label">Automation Coverage</span>
+            <div class="sr-bar"><div class="sr-fill fill-pass" style="width:88%"></div></div>
+            <span class="sr-pct">88%</span>
+          </div>
+          <div class="suite-row">
+            <span class="sr-label">CI/CD Pipeline Health</span>
+            <div class="sr-bar"><div class="sr-fill fill-pass" style="width:95%"></div></div>
+            <span class="sr-pct">95%</span>
+          </div>
+          <div class="suite-row">
+            <span class="sr-label">API Test Coverage</span>
+            <div class="sr-bar"><div class="sr-fill fill-ind" style="width:82%"></div></div>
+            <span class="sr-pct">82%</span>
+          </div>
+          <div class="suite-row">
+            <span class="sr-label">Delivery Improvement</span>
+            <div class="sr-bar"><div class="sr-fill fill-pass" style="width:20%"></div></div>
+            <span class="sr-pct">20%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-metrics">
+        <div class="hmet reveal">
+          <div class="hmet-val">4+</div>
+          <div class="hmet-lbl">Years at TCS</div>
+        </div>
+        <div class="hmet reveal">
+          <div class="hmet-val">3.96</div>
+          <div class="hmet-lbl">MS GPA / 4.00</div>
+        </div>
+        <div class="hmet reveal">
+          <div class="hmet-val">20%</div>
+          <div class="hmet-lbl">Delivery Improvement</div>
+        </div>
+      </div>
+      <div class="hero-ctas">
+        <a href="#experience"><button class="btn-primary">View Experience</button></a>
+        <a href="https://mail.google.com/mail/?view=cm&to=namitg97@gmail.com&su=Hi%20Namit%2C%20let%27s%20connect!" target="_blank" rel="noopener"><button class="btn-secondary">Get in Touch</button></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="section section-alt">
+  <div class="container">
+    <p class="sec-label reveal">// coverage matrix</p>
+    <h2 class="sec-heading reveal">Technical Skills</h2>
+    <p class="sec-desc reveal">Full-spectrum coverage across QA automation, software development, and DevOps tooling.</p>
+
+    <!-- CI Pipeline Animator -->
+    <div class="pipeline-wrap reveal">
+      <div class="pipeline-label">// CI/CD PIPELINE — LIVE RUN</div>
+      <div class="pipeline-stages" id="pipeline">
+        <div class="ps"><div class="ps-dot" id="ps-0">🔧</div><div class="ps-lbl" id="pl-0">Checkout</div></div>
+        <div class="ps-connector"><div class="ps-connector-fill" id="pc-0"></div></div>
+        <div class="ps"><div class="ps-dot" id="ps-1">🔨</div><div class="ps-lbl" id="pl-1">Build</div></div>
+        <div class="ps-connector"><div class="ps-connector-fill" id="pc-1"></div></div>
+        <div class="ps"><div class="ps-dot" id="ps-2">🧪</div><div class="ps-lbl" id="pl-2">Unit Tests</div></div>
+        <div class="ps-connector"><div class="ps-connector-fill" id="pc-2"></div></div>
+        <div class="ps"><div class="ps-dot" id="ps-3">🤖</div><div class="ps-lbl" id="pl-3">Automation</div></div>
+        <div class="ps-connector"><div class="ps-connector-fill" id="pc-3"></div></div>
+        <div class="ps"><div class="ps-dot" id="ps-4">🔌</div><div class="ps-lbl" id="pl-4">API Tests</div></div>
+        <div class="ps-connector"><div class="ps-connector-fill" id="pc-4"></div></div>
+        <div class="ps"><div class="ps-dot" id="ps-5">🚀</div><div class="ps-lbl" id="pl-5">Deploy</div></div>
+      </div>
+    </div>
+
+    <div class="coverage-grid">
+      <div class="cov-card featured reveal">
+        <div class="cov-head"><span class="cov-icon">🧪</span><span class="cov-title">QA & Automation</span><span class="cov-badge cb-pass">CORE</span></div>
+        <div class="tags">
+          <span class="tag tag-g">Selenium WebDriver</span><span class="tag tag-g">Playwright</span>
+          <span class="tag tag-g">TestNG</span><span class="tag tag-g">JUnit</span>
+          <span class="tag tag-g">Cucumber</span><span class="tag tag-g">SpecFlow</span><span class="tag tag-g">BDD</span>
+          <span class="tag">Postman</span><span class="tag">Swagger</span><span class="tag">API Testing</span>
+          <span class="tag">UAT</span><span class="tag">End-to-End Testing</span><span class="tag">UI Testing</span>
+        </div>
+      </div>
+      <div class="cov-card featured reveal">
+        <div class="cov-head"><span class="cov-icon">🔧</span><span class="cov-title">Jira Administration</span><span class="cov-badge cb-pass">EXPERT</span></div>
+        <div class="tags">
+          <span class="tag tag-g">Project Configuration</span><span class="tag tag-g">Permission Schemes</span>
+          <span class="tag tag-g">Notification Schemes</span><span class="tag tag-g">Workflow Design</span>
+          <span class="tag tag-g">Issue Type Schemes</span><span class="tag tag-g">Screen Schemes</span>
+          <span class="tag tag-g">User & Group Management</span><span class="tag">Jira Service Management</span>
+          <span class="tag">Xray</span><span class="tag">Confluence</span>
+        </div>
+      </div>
+      <div class="cov-card featured reveal">
+        <div class="cov-head"><span class="cov-icon">⌨️</span><span class="cov-title">Jira Development</span><span class="cov-badge cb-pass">EXPERT</span></div>
+        <div class="tags">
+          <span class="tag tag-g">ScriptRunner</span><span class="tag tag-g">Groovy Scripting</span>
+          <span class="tag tag-g">Jira REST API</span><span class="tag tag-g">Automation Rules</span>
+          <span class="tag tag-g">Custom Listeners</span><span class="tag tag-g">Post Functions</span>
+          <span class="tag">Bitbucket Integration</span><span class="tag">Azure DevOps Integration</span>
+        </div>
+      </div>
+      <div class="cov-card reveal">
+        <div class="cov-head"><span class="cov-icon">💻</span><span class="cov-title">Languages</span></div>
+        <div class="tags">
+          <span class="tag tag-g">Java</span><span class="tag tag-g">Python</span><span class="tag tag-g">SQL</span>
+          <span class="tag">JavaScript</span><span class="tag">TypeScript</span><span class="tag">C#</span>
+          <span class="tag">Groovy</span><span class="tag">C</span>
+        </div>
+      </div>
+      <div class="cov-card reveal">
+        <div class="cov-head"><span class="cov-icon">⚙️</span><span class="cov-title">Software Development</span></div>
+        <div class="tags">
+          <span class="tag tag-i">Spring Boot</span><span class="tag tag-i">React</span>
+          <span class="tag">REST APIs</span><span class="tag">HTML5</span><span class="tag">CSS3</span><span class="tag">JSON</span>
+        </div>
+      </div>
+      <div class="cov-card reveal">
+        <div class="cov-head"><span class="cov-icon">☁️</span><span class="cov-title">Cloud & DevOps</span></div>
+        <div class="tags">
+          <span class="tag tag-i">Azure DevOps</span><span class="tag tag-i">Bamboo</span>
+          <span class="tag">AWS</span><span class="tag">Jenkins</span><span class="tag">Docker</span><span class="tag">Git</span>
+        </div>
+      </div>
+      <div class="cov-card reveal">
+        <div class="cov-head"><span class="cov-icon">🗄️</span><span class="cov-title">Databases & Data</span></div>
+        <div class="tags">
+          <span class="tag">MSSQL</span><span class="tag">Oracle</span><span class="tag">MySQL</span><span class="tag">PostgreSQL</span>
+          <span class="tag">Power BI</span><span class="tag">Grafana</span><span class="tag">Kibana</span>
+          <span class="tag">Pandas</span><span class="tag">NumPy</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" class="section">
+  <div class="container">
+    <p class="sec-label reveal">// execution log</p>
+    <h2 class="sec-heading reveal">Work Experience</h2>
+    <p class="sec-desc reveal">4+ years engineering software and test automation at Tata Consultancy Services across enterprise clients.</p>
+    <div class="exec-log">
+
+      <div class="log-entry reveal">
+        <div class="log-header">
+          <div>
+            <div class="log-org">Tata Consultancy Services</div>
+            <div class="log-role">System Engineer</div>
+          </div>
+          <div class="log-meta">
+            <span class="log-period">Nov 2022 – Aug 2024</span>
+            <span class="log-status ls-done">COMPLETED</span>
+          </div>
+        </div>
+        <div class="log-stack">
+          <span class="tag tag-g">Selenium</span><span class="tag tag-g">Playwright</span><span class="tag tag-g">Java</span><span class="tag tag-g">C#</span>
+          <span class="tag tag-g">SpecFlow</span><span class="tag tag-g">Cucumber</span><span class="tag">AWS</span>
+          <span class="tag">MSSQL</span><span class="tag tag-i">Bamboo</span><span class="tag tag-i">Azure DevOps</span>
+          <span class="tag">Groovy</span><span class="tag">Postman</span><span class="tag">Jira</span>
+        </div>
+        <div class="log-body">
+          <ul class="log-bullets">
+            <li>Developed <strong>Selenium and Playwright test automation frameworks</strong> using Java, C#, SpecFlow, TestNG, and Cucumber for UI and REST API automation.</li>
+            <li>Optimized system engineering activities using <strong>AWS and MSSQL</strong> cloud solutions, helping improve project delivery timelines by <strong>20%</strong>.</li>
+            <li>Built and maintained <strong>CI/CD pipelines</strong> using Bamboo and Azure DevOps with Groovy scripting and Jira workflows.</li>
+            <li>Designed and executed <strong>REST API test suites</strong> in Postman and Swagger, validating request/response payloads, status codes, and error handling.</li>
+            <li>Wrote <strong>SQL queries</strong> against MSSQL and Oracle to validate backend data integrity and support root-cause analysis of defects.</li>
+            <li>Collaborated in <strong>Agile sprints</strong> with developers, business analysts, and QA leads to review requirements, estimate effort, and triage defects.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="log-entry reveal">
+        <div class="log-header">
+          <div>
+            <div class="log-org">Tata Consultancy Services</div>
+            <div class="log-role">Assistant System Engineer</div>
+          </div>
+          <div class="log-meta">
+            <span class="log-period">Oct 2021 – Oct 2022</span>
+            <span class="log-status ls-done">COMPLETED</span>
+          </div>
+        </div>
+        <div class="log-stack">
+          <span class="tag tag-g">Java</span><span class="tag tag-g">Python</span><span class="tag tag-g">Selenium</span>
+          <span class="tag tag-i">Bamboo</span><span class="tag tag-i">Azure DevOps</span>
+          <span class="tag">Jira</span><span class="tag">Confluence</span><span class="tag">Bitbucket</span>
+        </div>
+        <div class="log-body">
+          <ul class="log-bullets">
+            <li>Built applications and supported cross-functional workflows using <strong>Jira, Confluence, and Bitbucket</strong>.</li>
+            <li>Developed <strong>automated test and execution scripts</strong> using Java, Python, and Selenium to reduce application issues.</li>
+            <li>Managed <strong>CI/CD deployment pipelines</strong> using Bamboo and Azure DevOps to support software update cycles and reduce manual errors.</li>
+            <li>Performed <strong>regression, end-to-end, and UAT</strong> support testing, logging and tracking defects in Jira through resolution.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="log-entry reveal">
+        <div class="log-header">
+          <div>
+            <div class="log-org">Tata Consultancy Services</div>
+            <div class="log-role">Assistant System Engineer – Trainee</div>
+          </div>
+          <div class="log-meta">
+            <span class="log-period">Dec 2020 – Sep 2021</span>
+            <span class="log-status ls-done">COMPLETED</span>
+          </div>
+        </div>
+        <div class="log-stack">
+          <span class="tag">C#</span><span class="tag">Git</span><span class="tag">Swagger</span>
+        </div>
+        <div class="log-body">
+          <ul class="log-bullets">
+            <li>Supported system infrastructure activities and code review deployments under senior engineering guidance.</li>
+            <li>Developed hands-on experience with <strong>C#, Git version control, and Swagger API documentation</strong>.</li>
+            <li>Assisted in writing and maintaining automated test cases and analyzing test execution results with the QA team.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="section section-alt">
+  <div class="container">
+    <p class="sec-label reveal">// test reports</p>
+    <h2 class="sec-heading reveal">Projects</h2>
+    <p class="sec-desc reveal">Automation tooling, full-stack platforms, and security systems.</p>
+    <div class="proj-grid">
+
+      <div class="proj-card featured reveal">
+        <div class="proj-top">
+          <span class="proj-domain">Full Stack · Security</span>
+          <a href="https://github.com/namitg97-cell/cyber-armour-app" target="_blank" rel="noopener" class="proj-gh">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+            GitHub
+          </a>
+        </div>
+        <h3 class="proj-title">Cyber Armour</h3>
+        <p class="proj-desc">Full-stack <strong>cybersecurity monitoring platform</strong> built as Academic Capstone 2026. Log ingestion and search with Elasticsearch, real-time threat dashboards in Kibana, and containerized microservices with Docker for consistent deployment.</p>
+        <div class="proj-tags">
+          <span class="tag tag-g">React</span><span class="tag tag-g">Python</span><span class="tag tag-g">Docker</span>
+          <span class="tag">MongoDB</span><span class="tag">Redis</span><span class="tag">Elasticsearch</span><span class="tag">Kibana</span>
+        </div>
+      </div>
+
+      <div class="proj-card reveal">
+        <div class="proj-top"><span class="proj-domain">DevOps · Jira · Atlassian</span></div>
+        <h3 class="proj-title">Jira & DevOps Workflow Automation</h3>
+        <p class="proj-desc">Designed Jira and Confluence process optimization using permissions, notification schemes, and <strong>Groovy/ScriptRunner</strong>. Integrated Jira with Azure DevOps and Bitbucket for feature branch creation and peer review workflows. Client: <em>Sanlam Corporate ALM, TCS</em>.</p>
+        <div class="proj-tags">
+          <span class="tag tag-g">Jira</span><span class="tag tag-g">Groovy</span><span class="tag tag-g">ScriptRunner</span>
+          <span class="tag tag-i">Azure DevOps</span><span class="tag">Bitbucket</span><span class="tag">Xray</span>
+        </div>
+      </div>
+
+      <div class="proj-card reveal">
+        <div class="proj-top"><span class="proj-domain">QA · BDD · Automation</span></div>
+        <h3 class="proj-title">BDD Test Automation Framework</h3>
+        <p class="proj-desc">UI and web-service test automation using <strong>Cucumber and SpecFlow</strong> following Behaviour Driven Development. Created functional API testing routines with Swagger, custom PDF validation utilities, and delivered framework knowledge-transfer sessions. Client: <em>Sanlam Life Insurance, TCS</em>.</p>
+        <div class="proj-tags">
+          <span class="tag tag-g">Cucumber</span><span class="tag tag-g">SpecFlow</span><span class="tag tag-g">BDD</span>
+          <span class="tag">Swagger</span><span class="tag">Java</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section id="achievements" class="section">
+  <div class="container">
+    <p class="sec-label reveal">// assertions passed</p>
+    <h2 class="sec-heading reveal">Achievements</h2>
+    <p class="sec-desc reveal">Measurable outcomes and milestones.</p>
+    <div class="ach-grid">
+      <div class="ach-card featured reveal">
+        <div class="ach-icon">📈</div>
+        <div>
+          <div class="ach-title">20% Delivery Improvement</div>
+          <div class="ach-body">Optimized system engineering activities using AWS and MSSQL cloud solutions at TCS, helping improve project delivery timelines by 20% across client engagements.</div>
+        </div>
+      </div>
+      <div class="ach-card reveal">
+        <div class="ach-icon">🎓</div>
+        <div>
+          <div class="ach-title">GPA 3.96 / 4.00 — MS Information Systems</div>
+          <div class="ach-body">Top academic performance at Indiana Institute of Technology across Database Management, Data Analysis & Visualization, Cybersecurity, and Digital Enterprise Systems.</div>
+        </div>
+      </div>
+      <div class="ach-card reveal">
+        <div class="ach-icon">🤖</div>
+        <div>
+          <div class="ach-title">Enterprise Automation Frameworks</div>
+          <div class="ach-body">Architected and delivered Selenium-based automation frameworks and BDD suites for Sanlam Life Insurance and Sanlam Corporate ALM — two major enterprise clients at TCS.</div>
+        </div>
+      </div>
+      <div class="ach-card reveal">
+        <div class="ach-icon">🏎️</div>
+        <div>
+          <div class="ach-title">SAE SUPRA Steering Lead</div>
+          <div class="ach-body">Led the steering department within a 25-member team at Institute of Aeronautical Engineering, designing and assembling a racing buggy to SAE SUPRA specifications (2017).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education" class="section section-alt">
+  <div class="container">
+    <p class="sec-label reveal">// build environment</p>
+    <h2 class="sec-heading reveal">Education</h2>
+    <p class="sec-desc reveal"></p>
+    <div class="edu-grid">
+      <div class="edu-card featured reveal">
+        <div class="edu-deg">M.S. Information Systems</div>
+        <div class="edu-school">Indiana Institute of Technology</div>
+        <div class="edu-loc">Fort Wayne, IN · Aug 2024 – May 2026</div>
+        <div class="edu-gpa">GPA 3.96 / 4.00</div>
+        <div class="edu-courses">
+          <span class="ecourse">Database Management</span>
+          <span class="ecourse">Data Analysis & Visualization</span>
+          <span class="ecourse">Cybersecurity</span>
+          <span class="ecourse">Information Governance</span>
+          <span class="ecourse">Digital Enterprise Systems</span>
+        </div>
+      </div>
+      <div class="edu-card reveal">
+        <div class="edu-deg">B.Tech. Mechanical Engineering</div>
+        <div class="edu-school">Institute of Aeronautical Engineering</div>
+        <div class="edu-loc">Hyderabad, India · Aug 2016 – Jul 2020</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="section">
+  <div class="container">
+    <div class="contact-wrap">
+      <p class="sec-label reveal" style="text-align:center">// open to hire</p>
+      <h2 class="contact-heading reveal">Open to Jira Admin, Jira Developer & SDET Roles</h2>
+      <p class="contact-sub reveal">Targeting Jira Administration, Jira Developer, QA Automation, and Software Engineering positions. Fort Wayne, IN — open to relocation.</p>
+      <div class="contact-actions reveal">
+        <a href="https://mail.google.com/mail/?view=cm&to=namitg97@gmail.com&su=Hi%20Namit%2C%20let%27s%20connect!" target="_blank" rel="noopener">
+          <button class="btn-cta">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Email Namit
+          </button>
+        </a>
+        <button class="btn-outline-lg" id="dl-contact">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download Resume
+        </button>
+      </div>
+      <div class="contact-row reveal">
+        <a href="tel:+12604587095">(260) 458-7095</a>
+        <span class="csep">·</span>
+        <a href="mailto:namitg97@gmail.com">namitg97@gmail.com</a>
+        <span class="csep">·</span>
+        <a href="https://linkedin.com/in/namit-gupta" target="_blank" rel="noopener">LinkedIn</a>
+        <span class="csep">·</span>
+        <a href="https://github.com/namitg97-cell" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-name">NAMIT GUPTA</span>
+    <span class="footer-copy">© 2025 · SWE & QA Automation Engineer · Fort Wayne, IN</span>
+    <span class="footer-tag">TCS · Indiana Tech</span>
+  </div>
+</footer>
+
+<script>
+const RESUME_B64 = "";
+
+// ticker
+const tickerItems = [
+  {label:'BUILD',status:'pass'},{label:'SELENIUM SUITE',status:'pass'},
+  {label:'API TESTS',status:'pass'},{label:'BDD FRAMEWORK',status:'pass'},
+  {label:'CI/CD PIPELINE',status:'pass'},{label:'DEPLOY',status:'pass'},
+  {label:'GROOVY SCRIPTS',status:'pass'},{label:'JIRA WORKFLOWS',status:'pass'},
+  {label:'UAT COMPLETE',status:'pass'},{label:'0 DEFECTS',status:'pass'},
+];
+function buildTicker(){
+  const track = document.getElementById('ticker-track');
+  const doubled = [...tickerItems,...tickerItems];
+  track.innerHTML = doubled.map(i=>`<span class="ticker-item"><span class="dot dot-${i.status}"></span>${i.label} ✓</span>`).join('');
+}
+buildTicker();
+
+// nav scroll
+const nav = document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>20),{passive:true});
+
+// hamburger
+const ham = document.getElementById('hamburger');
+const mobNav = document.getElementById('mob-nav');
+ham.addEventListener('click',()=>{const o=mobNav.classList.toggle('open');ham.classList.toggle('open',o);});
+mobNav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{mobNav.classList.remove('open');ham.classList.remove('open');}));
+
+// downloads
+function downloadResume(){
+  window.open('https://drive.google.com/uc?export=download&id=1bVqf7j0kOTTay2IkIPXqp0ZvGXtF5U1_','_blank');
+}
+document.getElementById('dl-nav').addEventListener('click',downloadResume);
+document.getElementById('dl-mob').addEventListener('click',()=>{downloadResume();mobNav.classList.remove('open');ham.classList.remove('open');});
+document.getElementById('dl-contact').addEventListener('click',downloadResume);
+
+// CI pipeline animation
+let pipelineRunning=false;
+function runPipeline(){
+  if(pipelineRunning)return;
+  pipelineRunning=true;
+  // reset
+  for(let i=0;i<6;i++){
+    const dot=document.getElementById('ps-'+i);
+    const lbl=document.getElementById('pl-'+i);
+    dot.className='ps-dot';dot.textContent=['🔧','🔨','🧪','🤖','🔌','🚀'][i];
+    lbl.className='ps-lbl';
+    if(i<5){document.getElementById('pc-'+i).style.width='0';}
+  }
+  const icons=['🔧','🔨','🧪','🤖','🔌','🚀'];
+  function step(i){
+    if(i>=6){setTimeout(()=>{pipelineRunning=false;setTimeout(runPipeline,3000);},1000);return;}
+    const dot=document.getElementById('ps-'+i);
+    const lbl=document.getElementById('pl-'+i);
+    dot.classList.add('active');lbl.classList.add('active');
+    setTimeout(()=>{
+      dot.classList.remove('active');dot.classList.add('done');
+      lbl.classList.remove('active');lbl.classList.add('done');
+      if(i<5){
+        const conn=document.getElementById('pc-'+i);
+        conn.style.width='100%';
+      }
+      setTimeout(()=>step(i+1),300);
+    },700);
+  }
+  step(0);
+}
+
+// pipeline observer
+const pipelineObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){runPipeline();pipelineObs.unobserve(e.target);}});
+},{threshold:.3});
+const pw=document.querySelector('.pipeline-wrap');
+if(pw)pipelineObs.observe(pw);
+
+// scroll reveal
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});
+},{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',function(e){
+    const t=document.querySelector(this.getAttribute('href'));
+    if(!t)return;e.preventDefault();
+    t.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+</script>
+</body>
+</html>
